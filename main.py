@@ -4,6 +4,7 @@ import traceback
 from pygame.locals import *
 import myplane
 import enemy
+import bullet
 
 pygame.init()
 pygame.mixer.init()
@@ -79,6 +80,13 @@ def main():
     large_enemies = pygame.sprite.Group()
     add_large_enemies(large_enemies, enemies, 2)
 
+    # generate bullets
+    bullet1 = []
+    bullet1_index = 0
+    BULLET1_NUM = 4
+    for i in range (BULLET1_NUM):
+        bullet1.append(bullet.Bullet1(me.rect.midtop))
+
     # index of the images when crash
     e1_destroy_index = 0
     e2_destroy_index = 0
@@ -115,6 +123,22 @@ def main():
 
         screen.blit(background,(0,0))
 
+        # shoot the bullets
+        if not(delay % 10):
+            bullet1[bullet1_index].reset(me.rect.midtop)
+            bullet1_index = (bullet1_index + 1) % BULLET1_NUM
+
+        # test if the bullets have hitted the enemies
+        for  b in bullet1:
+            if b.active:
+                b.move()
+                screen.blit(b.image, b.rect)
+                enemy_hit = pygame.sprite.spritecollide(b, enemies, False, pygame.sprite.collide_mask)
+                if enemy_hit:
+                    b.active = False
+                    for e in enemy_hit:
+                        e.active = False
+
         # draw large enemies
         for each in large_enemies:
             if each.active:
@@ -125,7 +149,7 @@ def main():
                     screen.blit(each.image2, each.rect)
                 # play the sound when in the large enemy appears
                 if each.rect.bottom == -50:
-                    enemy3_fly_sound.play()
+                    enemy3_fly_sound.play(-1)
             else:
                 # destroy the large plane
                 if not(delay % 3):
