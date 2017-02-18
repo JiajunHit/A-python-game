@@ -79,13 +79,19 @@ def main():
     large_enemies = pygame.sprite.Group()
     add_large_enemies(large_enemies, enemies, 2)
 
-    clock = pygame.time.Clock()
+    # index of the images when crash
+    e1_destroy_index = 0
+    e2_destroy_index = 0
+    e3_destroy_index = 0
+    me_destroy_index = 0
 
     # switch the images of my plane, True for image1 False for image2
     switch_image = True
     
     # for delay
-    delay = 1000
+    delay = 100
+    
+    clock = pygame.time.Clock()
 
     running = True
 
@@ -111,29 +117,85 @@ def main():
 
         # draw large enemies
         for each in large_enemies:
-            each.move()
-            if switch_image:
-                screen.blit(each.image1, each.rect)
+            if each.active:
+                each.move()
+                if switch_image:
+                    screen.blit(each.image1, each.rect)
+                else:
+                    screen.blit(each.image2, each.rect)
+                # play the sound when in the large enemy appears
+                if each.rect.bottom == -50:
+                    enemy3_fly_sound.play()
             else:
-                screen.blit(each.image2, each.rect)
-            # play the sound when in the large enemy appears
-            if each.rect.bottom > - 50:
-                enemy3_fly_sound.play()
+                # destroy the large plane
+                if not(delay % 3):
+                    enemy3_fly_sound.stop()
+                    # play the destroy sound
+                    if e3_destroy_index == 0:
+                        enemy3_down_sound.play()
+                    # switch the destroy images and reset
+                    screen.blit(each.destroy_images[e3_destroy_index], each.rect)
+                    e3_destroy_index = (e3_destroy_index + 1) % 6
+                    # reset
+                    if e3_destroy_index == 0:
+                        each.reset()
+
         # draw middle enemies
         for each in middle_enemies:
-            each.move()
-            screen.blit(each.image, each.rect)
+            if each.active:
+                each.move()
+                screen.blit(each.image, each.rect)
+            else:
+                # destroy the middle plane
+                if not(delay % 3):
+                    # play the destroy sound
+                    if e2_destroy_index == 0:
+                        enemy2_down_sound.play()
+                    screen.blit(each.destroy_images[e2_destroy_index], each.rect)
+                    e2_destroy_index = (e2_destroy_index + 1) % 4
+                    if e2_destroy_index == 0:
+                        each.reset()
+
         # draw small enemies
         for each in small_enemies:
-            each.move()
-            screen.blit(each.image, each.rect)
+            if each.active:
+                each.move()
+                screen.blit(each.image, each.rect)
+            else:
+                # destroy the small plane
+                if not(delay % 3):
+                    # play the destroy sound
+                    if e1_destroy_index == 0:
+                        enemy1_down_sound.play()
+                    screen.blit(each.destroy_images[e1_destroy_index], each.rect)
+                    e2_destroy_index = (e1_destroy_index + 1) % 4
+                    if e1_destroy_index == 0:
+                        each.reset()
 
+        # collide test if my plane is crashed
+        enemies_down = pygame.sprite.spritecollide(me, enemies, False, pygame.sprite.collide_mask)
+        if enemies_down:
+            # me.active = False
+            for each in enemies_down:
+                each.active = False
 
         # draw my plane
-        if switch_image: 
-            screen.blit(me.image1, me.rect)
+        if me.active:
+            if switch_image: 
+                screen.blit(me.image1, me.rect)
+            else:
+                screen.blit(me.image2, me.rect)
         else:
-            screen.blit(me.image2, me.rect)
+            # destroy my plane
+            if not(delay % 3):
+                # play the destroy sound
+                if me_destroy_index == 0:
+                    me_down_sound.play()
+                screen.blit(me.destroy_images[me_destroy_index], me.rect)
+                me_destroy_index = (me_destroy_index + 1) % 4
+                if me_destroy_index == 0:
+                    each.reset()
+
 
         # switch image
         if not(delay % 5):
