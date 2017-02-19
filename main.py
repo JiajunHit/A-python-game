@@ -62,7 +62,7 @@ def add_large_enemies(group1, group2, num):
 
 
 def main():
-    pygame.mixer.music.play(-1)
+    # pygame.mixer.music.play(-1)
 
     # generate my plane
     me = myplane.Myplane(bg_size)
@@ -137,7 +137,12 @@ def main():
                 if enemy_hit:
                     b.active = False
                     for e in enemy_hit:
-                        e.active = False
+                        if e in middle_enemies or e in large_enemies:
+                            e.energy -= 1
+                            if e.energy == 0:
+                                e.active = False
+                        else:
+                            e.active = False
 
         # draw large enemies
         for each in large_enemies:
@@ -175,6 +180,7 @@ def main():
                     # play the destroy sound
                     if e2_destroy_index == 0:
                         enemy2_down_sound.play()
+                        print("666")
                     screen.blit(each.destroy_images[e2_destroy_index], each.rect)
                     e2_destroy_index = (e2_destroy_index + 1) % 4
                     if e2_destroy_index == 0:

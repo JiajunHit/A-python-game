@@ -34,6 +34,8 @@ class SmallEnemy(pygame.sprite.Sprite):
                     randint(-5 * self.height, 0)
 
 class MidEnemy(pygame.sprite.Sprite):
+    energy = 8
+    
     def __init__(self, bg_size):
         pygame.sprite.Sprite.__init__(self)
 
@@ -52,6 +54,7 @@ class MidEnemy(pygame.sprite.Sprite):
                     randint(0, self.width - self.rect.width), \
                     randint(-10 * self.height, -self.height)
         self.mask = pygame.mask.from_surface(self.image)
+        self.energy = MidEnemy.energy
 
     def move(self):
         if self.rect.top < self.height:
@@ -61,11 +64,14 @@ class MidEnemy(pygame.sprite.Sprite):
 
     def reset(self):
         self.active = True
+        self.energy = MidEnemy.energy
         self.rect.left, self.rect.top = \
                     randint(0, self.width - self.rect.width), \
                     randint(-10 * self.height, -self.height)
         
 class LargeEnemy(pygame.sprite.Sprite):
+    energy = 20
+
     def __init__(self, bg_size):
         pygame.sprite.Sprite.__init__(self)
 
@@ -87,6 +93,7 @@ class LargeEnemy(pygame.sprite.Sprite):
                     randint(0, self.width - self.rect.width), \
                     randint(-15 * self.height, -5 * self.height)
         self.mask = pygame.mask.from_surface(self.image1)
+        self.energy = LargeEnemy.energy
 
     def move(self):
         if self.rect.top < self.height:
@@ -96,6 +103,7 @@ class LargeEnemy(pygame.sprite.Sprite):
 
     def reset(self):
         self.active = True
+        self.energy = LargeEnemy.energy
         self.rect.left, self.rect.top = \
                     randint(0, self.width - self.rect.width), \
                     randint(-15 * self.height, -5 * self.height)
