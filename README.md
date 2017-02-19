@@ -1,3 +1,10 @@
+## issuses to be fixed
+- when the *middle_enemies* died there is no **down_sound** playing
+- the codes are added but there is still **no** life bar
+2017-02-19
+
+
+
 # Wings of Fury
 
 This is a **game** written in **python**. 
