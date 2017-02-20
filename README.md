@@ -4,6 +4,7 @@
 - add pause/resume button
 - increase the difficulty when as the score grows
 - other improvement
+
 *2017-02-10*
 
 
