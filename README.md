@@ -5,7 +5,7 @@
 - increase the difficulty when as the score grows
 - other improvement
 
-*2017-02-10*
+*2017-02-20*
 
 
 ### new features
