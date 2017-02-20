@@ -15,6 +15,10 @@ pygame.display.set_caption('Wing of Fury')
 
 background = pygame.image.load("images/background.png").convert()
 
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+
 # load music
 pygame.mixer.music.load("sound/game_music.ogg")
 pygame.mixer.music.set_volume(0.2)
@@ -62,7 +66,7 @@ def add_large_enemies(group1, group2, num):
 
 
 def main():
-    pygame.mixer.music.play(-1)
+    # pygame.mixer.music.play(-1)
 
     # generate my plane
     me = myplane.Myplane(bg_size)
@@ -137,19 +141,46 @@ def main():
                 if enemy_hit:
                     b.active = False
                     for e in enemy_hit:
-                        e.active = False
+                        if e in middle_enemies or e in large_enemies:
+                            e.energy -= 1
+                            e.hit = True
+                            if e.energy == 0:
+                                e.active = False
+                        else:
+                            e.active = False
 
         # draw large enemies
         for each in large_enemies:
             if each.active:
                 each.move()
-                if switch_image:
-                    screen.blit(each.image1, each.rect)
+                if each.hit == True:
+                    screen.blit(each.image_hit, each.rect)
+                    each.hit = False
                 else:
-                    screen.blit(each.image2, each.rect)
+                    if switch_image:
+                        screen.blit(each.image1, each.rect)
+                    else:
+                        screen.blit(each.image2, each.rect)
+
+                # draw life bar
+                pygame.draw.line(screen, BLACK, \
+                            (each.rect.left, each.rect.top - 5), \
+                            (each.rect.right, each.rect.top - 5), \
+                            2)
+                energy_remain = each.energy / enemy.LargeEnemy.energy
+                if energy_remain < 0.2:
+                    energy_color = RED
+                else:
+                    energy_color = GREEN
+                pygame.draw.line(screen, energy_color, \
+                            (each.rect.left, each.rect.top - 5), \
+                            (each.rect.left + energy_remain * each.rect.width, each.rect.top - 5), \
+                            2)
+
                 # play the sound when in the large enemy appears
                 if each.rect.bottom == -50:
                     enemy3_fly_sound.play(-1)
+
             else:
                 # destroy the large plane
                 if not(delay % 3):
@@ -168,7 +199,27 @@ def main():
         for each in middle_enemies:
             if each.active:
                 each.move()
-                screen.blit(each.image, each.rect)
+                if each.hit == True:
+                    screen.blit(each.image_hit, each.rect)
+                    each.hit = False
+                else:
+                    screen.blit(each.image, each.rect)
+
+                # draw life bar
+                pygame.draw.line(screen, BLACK, \
+                            (each.rect.left, each.rect.top - 5), \
+                            (each.rect.right, each.rect.top - 5), \
+                            2)
+                energy_remain = each.energy / enemy.MidEnemy.energy
+                if energy_remain < 0.2:
+                    energy_color = RED
+                else:
+                    energy_color = GREEN
+                pygame.draw.line(screen, energy_color, \
+                            (each.rect.left, each.rect.top - 5), \
+                            (each.rect.left + energy_remain * each.rect.width, each.rect.top - 5), \
+                            2)
+
             else:
                 # destroy the middle plane
                 if not(delay % 3):

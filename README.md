@@ -1,3 +1,12 @@
+## issuses to be fixed
+- ~~when the *middle_enemies* died there is no **down_sound** playing~~
+- the codes are added but there is still **no** life bar
+
+## new features
+- large and middle enemies wolud be destroy by times of hits rather than just one hit
+- when hitted and not destroyed there would be effects
+- add life bar
+
 # Wings of Fury
 
 This is a **game** written in **python**. 
