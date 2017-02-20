@@ -192,7 +192,7 @@ def main():
                     if e1_destroy_index == 0:
                         enemy1_down_sound.play()
                     screen.blit(each.destroy_images[e1_destroy_index], each.rect)
-                    e2_destroy_index = (e1_destroy_index + 1) % 4
+                    e1_destroy_index = (e1_destroy_index + 1) % 4
                     if e1_destroy_index == 0:
                         each.reset()
 
