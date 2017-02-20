@@ -15,6 +15,10 @@ pygame.display.set_caption('Wing of Fury')
 
 background = pygame.image.load("images/background.png").convert()
 
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+
 # load music
 pygame.mixer.music.load("sound/game_music.ogg")
 pygame.mixer.music.set_volume(0.2)
@@ -151,15 +155,32 @@ def main():
                 each.move()
                 if each.hit == True:
                     screen.blit(each.image_hit, each.rect)
-                    each.hit == False
+                    each.hit = False
                 else:
                     if switch_image:
                         screen.blit(each.image1, each.rect)
                     else:
                         screen.blit(each.image2, each.rect)
+
+                # draw life bar
+                pygame.draw.line(screen, BLACK, \
+                            (each.rect.left, each.rect.top - 5), \
+                            (each.rect.right, each.rect.top - 5), \
+                            2)
+                energy_remain = each.energy / enemy.LargeEnemy.energy
+                if energy_remain < 0.2:
+                    energy_color = RED
+                else:
+                    energy_color = GREEN
+                pygame.draw.line(screen, energy_color, \
+                            (each.rect.left, each.rect.top - 5), \
+                            (each.rect.left + energy_remain * each.rect.width, each.rect.top - 5), \
+                            2)
+
                 # play the sound when in the large enemy appears
                 if each.rect.bottom == -50:
                     enemy3_fly_sound.play(-1)
+
             else:
                 # destroy the large plane
                 if not(delay % 3):
@@ -180,9 +201,25 @@ def main():
                 each.move()
                 if each.hit == True:
                     screen.blit(each.image_hit, each.rect)
-                    each.hit == False
+                    each.hit = False
                 else:
                     screen.blit(each.image, each.rect)
+
+                # draw life bar
+                pygame.draw.line(screen, BLACK, \
+                            (each.rect.left, each.rect.top - 5), \
+                            (each.rect.right, each.rect.top - 5), \
+                            2)
+                energy_remain = each.energy / enemy.MidEnemy.energy
+                if energy_remain < 0.2:
+                    energy_color = RED
+                else:
+                    energy_color = GREEN
+                pygame.draw.line(screen, energy_color, \
+                            (each.rect.left, each.rect.top - 5), \
+                            (each.rect.left + energy_remain * each.rect.width, each.rect.top - 5), \
+                            2)
+
             else:
                 # destroy the middle plane
                 if not(delay % 3):
