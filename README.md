@@ -1,4 +1,13 @@
 ### new features
+- fix the bug when the large was not deatroyed the "fly music" would not stop
+- add scores
+- add pause/resume button
+- increase the difficulty when as the score grows
+- other improvement
+*2017-02-10*
+
+
+### new features
 - large and middle enemies wolud be destroy by times of hits rather than just one hit
 - when hitted and not destroyed there would be effects
 - add life bar
