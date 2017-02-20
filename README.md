@@ -1,9 +1,11 @@
 ## issuses to be fixed
-- when the *middle_enemies* died there is no **down_sound** playing
+- ~~when the *middle_enemies* died there is no **down_sound** playing~~
 - the codes are added but there is still **no** life bar
-2017-02-19
 
-
+## new features
+- large and middle enemies wolud be destroy by times of hits rather than just one hit
+- when hitted and not destroyed there would be effects
+- add life bar
 
 # Wings of Fury
 
