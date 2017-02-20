@@ -35,8 +35,6 @@ get_bomb_sound = pygame.mixer.Sound("sound/get_bomb.wav")
 get_bomb_sound.set_volume(0.2)
 upgrade_sound = pygame.mixer.Sound("sound/upgrade.wav")
 upgrade_sound.set_volume(0.2)
-enemy3_fly_sound = pygame.mixer.Sound("sound/enemy3_flying.wav")
-enemy3_fly_sound.set_volume(0.2)
 enemy1_down_sound = pygame.mixer.Sound("sound/enemy1_down.wav")
 enemy1_down_sound.set_volume(0.1)
 enemy2_down_sound = pygame.mixer.Sound("sound/enemy2_down.wav")
@@ -65,6 +63,9 @@ def add_large_enemies(group1, group2, num):
         group1.add(e3)
         group2.add(e3)
 
+def increase_speed(target, inc):
+    for each in target:
+        each.speed += inc
 
 def main():
     pygame.mixer.music.play(-1)
@@ -112,6 +113,8 @@ def main():
     pause_rect.left, pause_rect.top = width - pause_rect.width - 10, 10
     pause_image = pause_nor_image
 
+    # set levels
+    level = 1
 
     # switch the images of my plane, True for image1 False for image2
     switch_image = True
@@ -146,6 +149,47 @@ def main():
                         pause_image = resume_nor_image
                     else:
                         pause_image = pause_nor_image
+        
+        # increase the game difficulty level based on the score
+        if level == 1 and score > 500:
+            level = 2
+            upgrade_sound.play()
+            # add three small enenies and two middle enemies and one large enemie
+            add_small_enemies(small_enemies, enemies, 3)
+            add_middle_enemies(middle_enemies, enemies, 2)
+            add_large_enemies(large_enemies, enemies, 1)
+            # increase the speed of small_enemies
+            increase_speed(small_enemies, 1)
+        elif level == 2 and score > 1500:
+            level = 3
+            upgrade_sound.play()
+            # add three small enenies and two middle enemies and one large enemie
+            add_small_enemies(small_enemies, enemies, 5)
+            add_middle_enemies(middle_enemies, enemies, 3)
+            add_large_enemies(large_enemies, enemies, 2)
+            # increase the speed of small_enemies
+            increase_speed(small_enemies, 1)
+            increase_speed(middle_enemies, 1)
+        elif level == 3 and score > 6000:
+            level = 4
+            upgrade_sound.play()
+            # add three small enenies and two middle enemies and one large enemie
+            add_small_enemies(small_enemies, enemies, 3)
+            add_middle_enemies(middle_enemies, enemies, 2)
+            add_large_enemies(large_enemies, enemies, 1)
+            # increase the speed of small_enemies
+            increase_speed(small_enemies, 1)
+            increase_speed(middle_enemies, 1)
+        elif level == 4 and score > 10000:
+            level = 5
+            upgrade_sound.play()
+            # add three small enenies and two middle enemies and one large enemie
+            add_small_enemies(small_enemies, enemies, 3)
+            add_middle_enemies(middle_enemies, enemies, 2)
+            add_large_enemies(large_enemies, enemies, 1)
+            # increase the speed of small_enemies
+            increase_speed(small_enemies, 1)
+            increase_speed(middle_enemies, 1)
 
         screen.blit(background,(0,0))
 
@@ -214,12 +258,11 @@ def main():
 
                     # play the sound when in the large enemy appears
                     if each.rect.bottom == -50:
-                        enemy3_fly_sound.play(-1)
+                        each.fly_sound.play(-1)
 
                 else:
                     # destroy the large plane
                     if not(delay % 3):
-                        enemy3_fly_sound.stop()
                         # play the destroy sound
                         if e3_destroy_index == 0:
                             enemy3_down_sound.play()

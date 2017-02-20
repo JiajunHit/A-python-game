@@ -116,6 +116,8 @@ class LargeEnemy(pygame.sprite.Sprite):
                     randint(-15 * self.height, -5 * self.height)
         self.mask = pygame.mask.from_surface(self.image1)
         self.energy = LargeEnemy.energy
+        self.fly_sound = pygame.mixer.Sound("sound/enemy3_flying.wav")
+        self.fly_sound.set_volume(0.2)
 
     def move(self):
         if self.rect.top < self.height:
@@ -129,3 +131,4 @@ class LargeEnemy(pygame.sprite.Sprite):
         self.rect.left, self.rect.top = \
                     randint(0, self.width - self.rect.width), \
                     randint(-15 * self.height, -5 * self.height)
+        self.fly_sound.stop()
