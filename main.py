@@ -139,6 +139,7 @@ def main():
                     for e in enemy_hit:
                         if e in middle_enemies or e in large_enemies:
                             e.energy -= 1
+                            e.hit = True
                             if e.energy == 0:
                                 e.active = False
                         else:
@@ -148,10 +149,14 @@ def main():
         for each in large_enemies:
             if each.active:
                 each.move()
-                if switch_image:
-                    screen.blit(each.image1, each.rect)
+                if each.hit == True:
+                    screen.blit(each.image_hit, each.rect)
+                    each.hit == False
                 else:
-                    screen.blit(each.image2, each.rect)
+                    if switch_image:
+                        screen.blit(each.image1, each.rect)
+                    else:
+                        screen.blit(each.image2, each.rect)
                 # play the sound when in the large enemy appears
                 if each.rect.bottom == -50:
                     enemy3_fly_sound.play(-1)
@@ -173,14 +178,17 @@ def main():
         for each in middle_enemies:
             if each.active:
                 each.move()
-                screen.blit(each.image, each.rect)
+                if each.hit == True:
+                    screen.blit(each.image_hit, each.rect)
+                    each.hit == False
+                else:
+                    screen.blit(each.image, each.rect)
             else:
                 # destroy the middle plane
                 if not(delay % 3):
                     # play the destroy sound
                     if e2_destroy_index == 0:
                         enemy2_down_sound.play()
-                        print("666")
                     screen.blit(each.destroy_images[e2_destroy_index], each.rect)
                     e2_destroy_index = (e2_destroy_index + 1) % 4
                     if e2_destroy_index == 0:
@@ -198,7 +206,7 @@ def main():
                     if e1_destroy_index == 0:
                         enemy1_down_sound.play()
                     screen.blit(each.destroy_images[e1_destroy_index], each.rect)
-                    e2_destroy_index = (e1_destroy_index + 1) % 4
+                    e1_destroy_index = (e1_destroy_index + 1) % 4
                     if e1_destroy_index == 0:
                         each.reset()
 
