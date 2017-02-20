@@ -2,7 +2,8 @@
 - large and middle enemies wolud be destroy by times of hits rather than just one hit
 - when hitted and not destroyed there would be effects
 - add life bar
-2017-02-20
+
+*2017-02-20*
 
 # Wings of Fury
 
