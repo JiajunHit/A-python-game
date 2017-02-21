@@ -85,12 +85,6 @@ def main():
     for i in range (BULLET1_NUM):
         bullet1.append(bullet.Bullet1(me.rect.midtop))
 
-    # index of the images when crash
-    e1_destroy_index = 0
-    e2_destroy_index = 0
-    e3_destroy_index = 0
-    me_destroy_index = 0
-
     # statistic the scores
     score = 0
     score_font = pygame.font.Font("font/font.ttf", 36)
@@ -152,7 +146,7 @@ def main():
             add_large_enemies(large_enemies, enemies, 1)
             # increase the speed of small_enemies
             increase_speed(small_enemies, 1)
-        elif level == 2 and score > 1500:
+        elif level == 2 and score > 1000:
             level = 3
             upgrade_sound.play()
             # add three small enenies and two middle enemies and one large enemie
@@ -162,7 +156,7 @@ def main():
             # increase the speed of small_enemies
             increase_speed(small_enemies, 1)
             increase_speed(middle_enemies, 1)
-        elif level == 3 and score > 6000:
+        elif level == 3 and score > 2000:
             level = 4
             upgrade_sound.play()
             # add three small enenies and two middle enemies and one large enemie
@@ -172,7 +166,7 @@ def main():
             # increase the speed of small_enemies
             increase_speed(small_enemies, 1)
             increase_speed(middle_enemies, 1)
-        elif level == 4 and score > 10000:
+        elif level == 4 and score > 4000:
             level = 5
             upgrade_sound.play()
             # add three small enenies and two middle enemies and one large enemie
@@ -224,14 +218,7 @@ def main():
             for each in large_enemies:
                 if each.active:
                     each.move()
-                    if each.hit == True:
-                        screen.blit(each.image_hit, each.rect)
-                        each.hit = False
-                    else:
-                        if switch_image:
-                            screen.blit(each.image1, each.rect)
-                        else:
-                            screen.blit(each.image2, each.rect)
+                    each.draw_plane(switch_image, screen)
 
                     # draw life bar
                     pygame.draw.line(screen, BLACK, \
@@ -270,11 +257,7 @@ def main():
             for each in middle_enemies:
                 if each.active:
                     each.move()
-                    if each.hit == True:
-                        screen.blit(each.image_hit, each.rect)
-                        each.hit = False
-                    else:
-                        screen.blit(each.image, each.rect)
+                    each.draw_plane(screen)
 
                     # draw life bar
                     pygame.draw.line(screen, BLACK, \
@@ -337,11 +320,11 @@ def main():
                 # destroy my plane
                 if not(delay % 3):
                     # play the destroy sound
-                    if me_destroy_index == 0:
+                    if me.destroy_index == 0:
                         me.down_sound.play()
-                    screen.blit(me.destroy_images[me_destroy_index], me.rect)
-                    me_destroy_index = (me_destroy_index + 1) % 4
-                    if me_destroy_index == 0:
+                    screen.blit(me.destroy_images[me.destroy_index], me.rect)
+                    me.destroy_index = (me.destroy_index + 1) % 4
+                    if me.destroy_index == 0:
                         print("GAME OVER")
                         running = False
 

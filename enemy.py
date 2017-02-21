@@ -70,6 +70,13 @@ class MidEnemy(pygame.sprite.Sprite):
         else:
             self.reset()
 
+    def draw_plane(self, screen):
+        if self.hit == True:
+            screen.blit(self.image_hit, self.rect)
+            self.hit = False
+        else:
+            screen.blit(self.image, self.rect)
+
     def reset(self):
         self.active = True
         self.energy = MidEnemy.energy
@@ -132,6 +139,16 @@ class LargeEnemy(pygame.sprite.Sprite):
             self.rect.top += self.speed
         else:
             self.reset()
+
+    def draw_plane(self, switch_image, screen):
+        if self.hit == True:
+            screen.blit(self.image_hit, self.rect)
+            self.hit = False
+        else:
+            if switch_image:
+                screen.blit(self.image1, self.rect)
+            else:
+                screen.blit(self.image2, self.rect)
 
     def reset(self):
         self.active = True
