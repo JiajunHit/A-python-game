@@ -14,12 +14,15 @@ class Myplane(pygame.sprite.Sprite):
                     pygame.image.load("images/me_destroy_4.png").convert_alpha()])
         self.rect = self.image1.get_rect()
         self.width, self.height = bg_size[0], bg_size[1]
-        self.speed = 10
-        self.active = True
         self.rect.left, self.rect.top = \
                     (self.width - self.rect.width) // 2, \
                     self.height - self.rect.height - 60
         self.mask = pygame.mask.from_surface(self.image1)
+        self.down_sound = pygame.mixer.Sound("sound/me_down.wav")
+        self.down_sound.set_volume(0.2)
+        self.destroy_index = 0
+        self.speed = 10
+        self.active = True
 
     def moveUp(self):
         if self.rect.top > 0:

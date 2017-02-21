@@ -35,14 +35,6 @@ get_bomb_sound = pygame.mixer.Sound("sound/get_bomb.wav")
 get_bomb_sound.set_volume(0.2)
 upgrade_sound = pygame.mixer.Sound("sound/upgrade.wav")
 upgrade_sound.set_volume(0.2)
-enemy1_down_sound = pygame.mixer.Sound("sound/enemy1_down.wav")
-enemy1_down_sound.set_volume(0.1)
-enemy2_down_sound = pygame.mixer.Sound("sound/enemy2_down.wav")
-enemy2_down_sound.set_volume(0.2)
-enemy3_down_sound = pygame.mixer.Sound("sound/enemy3_down.wav")
-enemy3_down_sound.set_volume(0.5)
-me_down_sound = pygame.mixer.Sound("sound/me_down.wav")
-me_down_sound.set_volume(0.2)
 
 #
 def add_small_enemies(group1, group2, num):
@@ -264,13 +256,13 @@ def main():
                     # destroy the large plane
                     if not(delay % 3):
                         # play the destroy sound
-                        if e3_destroy_index == 0:
-                            enemy3_down_sound.play()
+                        if each.destroy_index == 0:
+                            each.down_sound.play()
                         # switch the destroy images and reset
-                        screen.blit(each.destroy_images[e3_destroy_index], each.rect)
-                        e3_destroy_index = (e3_destroy_index + 1) % 6
+                        screen.blit(each.destroy_images[each.destroy_index], each.rect)
+                        each.destroy_index = (each.destroy_index + 1) % 6
                         # reset
-                        if e3_destroy_index == 0:
+                        if each.destroy_index == 0:
                             score += 100
                             each.reset()
 
@@ -303,11 +295,11 @@ def main():
                     # destroy the middle plane
                     if not(delay % 3):
                         # play the destroy sound
-                        if e2_destroy_index == 0:
-                            enemy2_down_sound.play()
-                        screen.blit(each.destroy_images[e2_destroy_index], each.rect)
-                        e2_destroy_index = (e2_destroy_index + 1) % 4
-                        if e2_destroy_index == 0:
+                        if each.destroy_index == 0:
+                            each.down_sound.play()
+                        screen.blit(each.destroy_images[each.destroy_index], each.rect)
+                        each.destroy_index = (each.destroy_index + 1) % 4
+                        if each.destroy_index == 0:
                             score += 60
                             each.reset()
 
@@ -320,11 +312,11 @@ def main():
                     # destroy the small plane
                     if not(delay % 3):
                         # play the destroy sound
-                        if e1_destroy_index == 0:
-                            enemy1_down_sound.play()
-                        screen.blit(each.destroy_images[e1_destroy_index], each.rect)
-                        e1_destroy_index = (e1_destroy_index + 1) % 4
-                        if e1_destroy_index == 0:
+                        if each.destroy_index == 0:
+                            each.down_sound.play()
+                        screen.blit(each.destroy_images[each.destroy_index], each.rect)
+                        each.destroy_index = (each.destroy_index + 1) % 4
+                        if each.destroy_index == 0:
                             score += 10
                             each.reset()
 
@@ -346,7 +338,7 @@ def main():
                 if not(delay % 3):
                     # play the destroy sound
                     if me_destroy_index == 0:
-                        me_down_sound.play()
+                        me.down_sound.play()
                     screen.blit(me.destroy_images[me_destroy_index], me.rect)
                     me_destroy_index = (me_destroy_index + 1) % 4
                     if me_destroy_index == 0:
