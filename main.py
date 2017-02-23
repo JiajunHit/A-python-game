@@ -9,7 +9,7 @@ import bullet
 pygame.init()
 pygame.mixer.init()
 
-bg_size = width, length = 480, 700
+bg_size = width, height = 480, 700
 screen = pygame.display.set_mode(bg_size)
 pygame.display.set_caption('Wing of Fury')
 
@@ -102,6 +102,12 @@ def main():
     # set levels
     level = 1
 
+    # bomb
+    bomb_image = pygame.image.load("images/bomb.png").convert_alpha()
+    bomb_rect = bomb_image.get_rect()
+    bomb_font = pygame.font.Font("font/font.ttf", 48)
+    bomb_num = 3
+
     # switch the images of my plane, True for image1 False for image2
     switch_image = True
     
@@ -135,6 +141,15 @@ def main():
                         pause_image = resume_nor_image
                     else:
                         pause_image = pause_nor_image
+
+            elif event.type == KEYDOWN:
+                if event.key == K_SPACE:
+                    if bomb_num:
+                        bomb_num -= 1
+                        bomb_sound.play()
+                        for each in enemies:
+                            if each.rect.bottom > 0:
+                                each.active = False
         
         # increase the game difficulty level based on the score
         if level == 1 and score > 500:
@@ -328,6 +343,13 @@ def main():
                         print("GAME OVER")
                         running = False
 
+            # show the bombs remian at the left bottom corner
+            bomb_text = bomb_font.render("x %d" % bomb_num, True, WHITE)
+            text_rect = bomb_text.get_rect()
+            screen.blit(bomb_image, (10, height -10 -bomb_rect.height))
+            screen.blit(bomb_text, (20 + bomb_rect.width, height -15 - text_rect.height))
+
+        # drwa the score
         score_text = score_font.render("Score : %s" % str(score), True, WHITE)
         screen.blit(score_text, (10, 5))
 
