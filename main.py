@@ -1,15 +1,17 @@
 import pygame
 import sys
 import traceback
-from pygame.locals import *
 import myplane
 import enemy
 import bullet
+import supply
+from pygame.locals import *
+from random import *
 
 pygame.init()
 pygame.mixer.init()
 
-bg_size = width, length = 480, 700
+bg_size = width, height = 480, 700
 screen = pygame.display.set_mode(bg_size)
 pygame.display.set_caption('Wing of Fury')
 
@@ -85,11 +87,13 @@ def main():
     for i in range (BULLET1_NUM):
         bullet1.append(bullet.Bullet1(me.rect.midtop))
 
-    # index of the images when crash
-    e1_destroy_index = 0
-    e2_destroy_index = 0
-    e3_destroy_index = 0
-    me_destroy_index = 0
+    # generate super bullets
+    bullet2 = []
+    bullet2_index = 0
+    BULLET2_NUM = 8
+    for i in range (BULLET2_NUM // 2):
+        bullet2.append(bullet.Bullet2((me.rect.centerx-33, me.rect.centery)))
+        bullet2.append(bullet.Bullet2((me.rect.centerx+30, me.rect.centery)))
 
     # statistic the scores
     score = 0
@@ -108,6 +112,24 @@ def main():
     # set levels
     level = 1
 
+    # bomb
+    bomb_image = pygame.image.load("images/bomb.png").convert_alpha()
+    bomb_rect = bomb_image.get_rect()
+    bomb_font = pygame.font.Font("font/font.ttf", 48)
+    bomb_num = 3
+
+    # grant a supply each 30 seconds
+    bullet_supply = supply.Bullet_supply(bg_size)
+    bomb_supply = supply.Bomb_supply(bg_size)
+    SUPPLY_TIMER = USEREVENT
+    pygame.time.set_timer(SUPPLY_TIMER, 30 * 1000)
+
+    # super bullet timer
+    DOUBLE_BULLET_TIMER = USEREVENT + 1
+
+    # sign whether or not to use the super bullet
+    is_double_bullet = False
+    
     # switch the images of my plane, True for image1 False for image2
     switch_image = True
     
@@ -121,15 +143,23 @@ def main():
     while running:
         for event in pygame.event.get():
             if event.type == QUIT:
-                pygame.quit()
                 sys.exit
+                pygame.quit()
             
-            # test weather or not user clicks the pause button
+            # test whether or not user clicks the pause button
             elif event.type == MOUSEBUTTONUP:
                 if event.button == 1 and pause_rect.collidepoint(event.pos):
                     pause = not pause
+                    if pause:
+                        pygame.time.set_timer(SUPPLY_TIMER, 0)
+                        pygame.mixer.music.pause()
+                        pygame.mixer.pause()
+                    else:
+                        pygame.time.set_timer(SUPPLY_TIMER, 30 * 1000)
+                        pygame.mixer.music.unpause()
+                        pygame.mixer.unpause()
 
-            # the weather or not the mouse is on the pause button
+            # the whether or not the mouse is on the pause button
             elif event.type == MOUSEMOTION:
                 if pause_rect.collidepoint(event.pos):
                     if pause:
@@ -141,6 +171,26 @@ def main():
                         pause_image = resume_nor_image
                     else:
                         pause_image = pause_nor_image
+
+            elif event.type == KEYDOWN:
+                if event.key == K_SPACE:
+                    if bomb_num:
+                        bomb_num -= 1
+                        bomb_sound.play()
+                        for each in enemies:
+                            if each.rect.bottom > 0:
+                                each.active = False
+
+            elif event.type == SUPPLY_TIMER:
+                supply_sound.play()
+                if choice([True, False]):
+                    bomb_supply.reset()
+                else:
+                    bullet_supply.reset()
+
+            elif event.type == DOUBLE_BULLET_TIMER:
+               is_double_bullet = False
+               pygame.time.set_timer(DOUBLE_BULLET_TIMER, 0)
         
         # increase the game difficulty level based on the score
         if level == 1 and score > 500:
@@ -152,7 +202,7 @@ def main():
             add_large_enemies(large_enemies, enemies, 1)
             # increase the speed of small_enemies
             increase_speed(small_enemies, 1)
-        elif level == 2 and score > 1500:
+        elif level == 2 and score > 1000:
             level = 3
             upgrade_sound.play()
             # add three small enenies and two middle enemies and one large enemie
@@ -162,7 +212,7 @@ def main():
             # increase the speed of small_enemies
             increase_speed(small_enemies, 1)
             increase_speed(middle_enemies, 1)
-        elif level == 3 and score > 6000:
+        elif level == 3 and score > 2000:
             level = 4
             upgrade_sound.play()
             # add three small enenies and two middle enemies and one large enemie
@@ -172,7 +222,7 @@ def main():
             # increase the speed of small_enemies
             increase_speed(small_enemies, 1)
             increase_speed(middle_enemies, 1)
-        elif level == 4 and score > 10000:
+        elif level == 4 and score > 4000:
             level = 5
             upgrade_sound.play()
             # add three small enenies and two middle enemies and one large enemie
@@ -198,13 +248,41 @@ def main():
             if key_pressed[K_d] or key_pressed[K_RIGHT]:
                 me.moveRight()
 
+            # provide the bomb supply
+            if bomb_supply.active:
+                bomb_supply.move()
+                screen.blit(bomb_supply.image, bomb_supply.rect)
+                if pygame.sprite.collide_mask(bomb_supply, me):
+                    get_bomb_sound.play()
+                    if bomb_num < 3:
+                        bomb_num += 1
+                    bomb_supply.active = False
+
+            # provide the bullet supply
+            if bullet_supply.active:
+                bullet_supply.move()
+                screen.blit(bullet_supply.image, bullet_supply.rect)
+                if pygame.sprite.collide_mask(bullet_supply, me):
+                    get_bullet_sound.play()
+                    is_double_bullet = True
+                    pygame.time.set_timer(DOUBLE_BULLET_TIMER, 20 * 1000)
+                    bullet_supply.active = False
+
             # shoot the bullets
             if not(delay % 10):
-                bullet1[bullet1_index].reset(me.rect.midtop)
-                bullet1_index = (bullet1_index + 1) % BULLET1_NUM
+                bullet_sound.play()
+                if is_double_bullet:
+                    bullets = bullet2
+                    bullets[bullet2_index].reset((me.rect.centerx-33, me.rect.centery))
+                    bullets[bullet2_index + 1].reset((me.rect.centerx+30, me.rect.centery))
+                    bullet2_index = (bullet2_index + 2) % BULLET2_NUM
+                else:
+                    bullets = bullet1
+                    bullet1[bullet1_index].reset(me.rect.midtop)
+                    bullet1_index = (bullet1_index + 1) % BULLET1_NUM
 
             # test if the bullets have hitted the enemies
-            for  b in bullet1:
+            for  b in bullets:
                 if b.active:
                     b.move()
                     screen.blit(b.image, b.rect)
@@ -224,14 +302,7 @@ def main():
             for each in large_enemies:
                 if each.active:
                     each.move()
-                    if each.hit == True:
-                        screen.blit(each.image_hit, each.rect)
-                        each.hit = False
-                    else:
-                        if switch_image:
-                            screen.blit(each.image1, each.rect)
-                        else:
-                            screen.blit(each.image2, each.rect)
+                    each.draw_plane(switch_image, screen)
 
                     # draw life bar
                     pygame.draw.line(screen, BLACK, \
@@ -270,11 +341,7 @@ def main():
             for each in middle_enemies:
                 if each.active:
                     each.move()
-                    if each.hit == True:
-                        screen.blit(each.image_hit, each.rect)
-                        each.hit = False
-                    else:
-                        screen.blit(each.image, each.rect)
+                    each.draw_plane(screen)
 
                     # draw life bar
                     pygame.draw.line(screen, BLACK, \
@@ -337,14 +404,21 @@ def main():
                 # destroy my plane
                 if not(delay % 3):
                     # play the destroy sound
-                    if me_destroy_index == 0:
+                    if me.destroy_index == 0:
                         me.down_sound.play()
-                    screen.blit(me.destroy_images[me_destroy_index], me.rect)
-                    me_destroy_index = (me_destroy_index + 1) % 4
-                    if me_destroy_index == 0:
+                    screen.blit(me.destroy_images[me.destroy_index], me.rect)
+                    me.destroy_index = (me.destroy_index + 1) % 4
+                    if me.destroy_index == 0:
                         print("GAME OVER")
                         running = False
 
+            # show the bombs remian at the left bottom corner
+            bomb_text = bomb_font.render("x %d" % bomb_num, True, WHITE)
+            text_rect = bomb_text.get_rect()
+            screen.blit(bomb_image, (10, height -10 -bomb_rect.height))
+            screen.blit(bomb_text, (20 + bomb_rect.width, height -15 - text_rect.height))
+
+        # drwa the score
         score_text = score_font.render("Score : %s" % str(score), True, WHITE)
         screen.blit(score_text, (10, 5))
 
