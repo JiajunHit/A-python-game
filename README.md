@@ -1,8 +1,15 @@
+### new fratures
+- add 3 **bumbs** at the beginning which can destroy all the enemies appear in the screen
+- add **bomb** and **super bullet** supplies
+
+*2017-02-23*
+
+
 ### new features
 - fix the bug when the large was not deatroyed the "fly music" would not stop
 - add scores
 - add pause/resume button
-- increase the difficulty when as the score grows
+- increase the difficulty as the score grows
 - other improvement
 
 *2017-02-20*
@@ -14,6 +21,7 @@
 - add life bar
 
 *2017-02-20*
+
 
 # Wings of Fury
 
