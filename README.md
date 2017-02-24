@@ -1,3 +1,11 @@
+### finished
+- add 3 lives for *myplane*
+- add the game over screen
+- user can play again without restart yhe program
+
+*2017-02-24*
+
+
 ### new fratures
 - add 3 **bumbs** at the beginning which can destroy all the enemies appear in the screen
 - add **bomb** and **super bullet** supplies

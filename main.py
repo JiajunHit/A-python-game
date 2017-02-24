@@ -129,7 +129,25 @@ def main():
 
     # sign whether or not to use the super bullet
     is_double_bullet = False
+
+    # abort the invincible status timer
+    INVINCIBLE_TIMER = USEREVENT + 2
+
+    # life amount
+    life_image = pygame.image.load("images/life.png").convert_alpha()
+    life_rect = life_image.get_rect()
+    life_num = 3
+
+    # the game over screen
+    gameover_font = pygame.font.Font("font/font.ttf", 48)
+    again_image = pygame.image.load("images/again.png").convert_alpha()
+    again_rect = again_image.get_rect()
+    gameover_image = pygame.image.load("images/gameover.png").convert_alpha()
+    gameover_rect = gameover_image.get_rect()
     
+    # to prevent the record file opened again and again
+    recorded = False
+
     # switch the images of my plane, True for image1 False for image2
     switch_image = True
     
@@ -191,6 +209,10 @@ def main():
             elif event.type == DOUBLE_BULLET_TIMER:
                is_double_bullet = False
                pygame.time.set_timer(DOUBLE_BULLET_TIMER, 0)
+
+            elif event.type == INVINCIBLE_TIMER:
+                me.invincible = False
+                pygame.time.set_timer(INVINCIBLE_TIMER, 0)
         
         # increase the game difficulty level based on the score
         if level == 1 and score > 500:
@@ -235,7 +257,7 @@ def main():
 
         screen.blit(background,(0,0))
 
-        if not pause:
+        if life_num and not pause:
             # test the keyboard
             key_pressed = pygame.key.get_pressed()
 
@@ -389,7 +411,7 @@ def main():
 
             # collide test if my plane is crashed
             enemies_down = pygame.sprite.spritecollide(me, enemies, False, pygame.sprite.collide_mask)
-            if enemies_down:
+            if enemies_down and not me.invincible:
                 me.active = False
                 for each in enemies_down:
                     each.active = False
@@ -409,18 +431,88 @@ def main():
                     screen.blit(me.destroy_images[me.destroy_index], me.rect)
                     me.destroy_index = (me.destroy_index + 1) % 4
                     if me.destroy_index == 0:
-                        print("GAME OVER")
-                        running = False
+                        life_num -= 1
+                        me.reset()
+                        pygame.time.set_timer(INVINCIBLE_TIMER, 3 * 1000)
 
             # show the bombs remian at the left bottom corner
             bomb_text = bomb_font.render("x %d" % bomb_num, True, WHITE)
             text_rect = bomb_text.get_rect()
             screen.blit(bomb_image, (10, height -10 -bomb_rect.height))
-            screen.blit(bomb_text, (20 + bomb_rect.width, height -15 - text_rect.height))
+            screen.blit(bomb_text, (20 + bomb_rect.width, height -5 -text_rect.height))
 
-        # drwa the score
-        score_text = score_font.render("Score : %s" % str(score), True, WHITE)
-        screen.blit(score_text, (10, 5))
+            # show the lives remian at the right bottom corner
+            if life_num:
+                for i in range(life_num):
+                    screen.blit(life_image, \
+                                (width-10-(i+1)*life_rect.width, height-5-life_rect.height))
+            # drwa the score
+            score_text = score_font.render("Score : %s" % str(score), True, WHITE)
+            screen.blit(score_text, (10, 5))
+
+        # when game over
+        elif life_num == 0:
+            # stop the background music
+            pygame.mixer.music.stop()
+            # stop all the sound
+            pygame.mixer.stop()
+            # stop the supply
+            pygame.time.set_timer(SUPPLY_TIMER, 0)
+
+            if not recorded:
+                recorded = True
+
+                # read the best score in histroy
+                with open("record.txt", "r") as f:
+                    record_score = int(f.read())
+
+                # if the score is better than the record score save the score
+                if score > record_score:
+                    with open("record.txt", "w") as f:
+                        f.write(str(score))
+
+            # draw the game over screen
+            record_score_text = score_font.render("BEST : %d" % record_score, True, WHITE)
+            screen.blit(record_score_text, (50, 50))
+
+            gameover_text1 = gameover_font.render("YOUR SCORE", True, WHITE)
+            gameover_text1_rect = gameover_text1.get_rect()
+            gameover_text1_rect.left, gameover_text1_rect.top = \
+                        (width - gameover_text1_rect.width) // 2, 180
+            screen.blit(gameover_text1, gameover_text1_rect)
+
+            gameover_text2 = gameover_font.render(str(score), True, WHITE)
+            gameover_text2_rect = gameover_text2.get_rect()
+            gameover_text2_rect.left, gameover_text2_rect.top = \
+                        (width - gameover_text2_rect.width) // 2, gameover_text1_rect.bottom + 10
+            screen.blit(gameover_text2, gameover_text2_rect)
+
+            again_rect.left, again_rect.top = \
+                        (width - again_rect.width) // 2, \
+                        gameover_text2_rect.bottom + 50
+            screen.blit(again_image, again_rect)
+
+            gameover_rect.left, gameover_rect.top = \
+                        (width - gameover_rect.width) // 2, \
+                        again_rect.bottom + 10
+            screen.blit(gameover_image, gameover_rect)
+            
+            # test the mouse
+            # the left button is clicked
+            if pygame.mouse.get_pressed()[0]:
+                # get the position of the mouse
+                pos = pygame.mouse.get_pos()
+
+                # user click PLAY AGAIN
+                if again_rect.left < pos[0] < again_rect.right and \
+                            again_rect.top < pos[1] < again_rect.bottom:
+                    main()
+                # user click GAME OVER
+                if gameover_rect.left < pos[0] < gameover_rect.right and \
+                            gameover_rect.top < pos[1] < gameover_rect.bottom:
+                    pygame.quit()
+                    sys.exit()
+
 
         # draw the pause button
         screen.blit(pause_image, pause_rect)
