@@ -1,3 +1,10 @@
+### finished
+- add 3 lives for *myplane*
+- add the game over screen
+- user can play again without restart yhe program
+
+*2017-02-24*
+
 ### new features
 - fix the bug when the large was not deatroyed the "fly music" would not stop
 - add scores
